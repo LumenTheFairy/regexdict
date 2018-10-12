@@ -6,9 +6,9 @@
 from regexdict import RegexDict
 
 rough_type = RegexDict([
-	("[a-z]+", "word"),
-	("\d+", "number"),
-	("", "empty")
+    ("[a-z]+", "word"),
+    ("\d+", "number"),
+    ("", "empty")
 ])
 
 print( rough_type["test"] ) # prints "word"
@@ -38,16 +38,16 @@ Similar to `get`, but returns a pair `(value, match)`, where match is a [match o
 from regexdict import RegexDict
 
 group_type = RegexDict([
-	("([a-z]+) ([a-z]+)", "two words"),
-	("(\d+):(\d+):(\d+)", "three numbers")
+    ("([a-z]+) ([a-z]+)", "two words"),
+    ("(\d+):(\d+):(\d+)", "three numbers")
 ])
 
 value, match = group_type.get_with_match("test blah")
-print( value )  		# prints "two words"
+print( value )          # prints "two words"
 print( match.groups() ) # prints "('test', 'blah')"
 
 value, match = group_type.get_with_match("12:255:9")
-print( value )  		# prints "three numbers"
+print( value )          # prints "three numbers"
 print( match.groups() ) # prints "('12', '255', '9')"
 ```
 
@@ -63,18 +63,18 @@ def bang(s): return s + "!"
 def adds(x, y): return int(x) + int(y)
 
 commands = RegexDict([
-	("five", return5),
-	("(.*) with a bang", bang),
-	("(\d+) \+ (\d+)", adds)
+    ("five", return5),
+    ("(.*) with a bang", bang),
+    ("(\d+) \+ (\d+)", adds)
 ])
 
-print( commands.apply("five") ) 			# prints "5"
+print( commands.apply("five") )             # prints "5"
 print( commands.apply("boom with a bang") ) # prints "boom!"
-print( commands.apply("21 + 7") )		    # prints "28"
+print( commands.apply("21 + 7") )           # prints "28"
 # or simply...
-print( commands("five") ) 			  # prints "5"
+print( commands("five") )             # prints "5"
 print( commands("boom with a bang") ) # prints "boom!"
-print( commands("21 + 7") )		      # prints "28"
+print( commands("21 + 7") )           # prints "28"
 ```
 
 ## Efficiency
@@ -83,10 +83,10 @@ A naive implementation of the get for a regex keyed dictionary would simply test
 
 ```
 def get(regDict, key):
-	for regex, value in regDict:
-		if re.fullmatch(regex, key):
-			return value
-	raise KeyError
+    for regex, value in regDict:
+        if re.fullmatch(regex, key):
+            return value
+    raise KeyError
 ```
 
 The problem with this approach is that it redoes work and wastes time on irrelevant patterns. For example, take two patterns `"slow" * 1000 + "\d"` and `"slow" * 1000 + "[a-z]"` (appearing in that order). If our key happens to be `"slow" * 1000 + "a"`, the naive implementation will try to match with the first pattern, and (assuming `re` scans the string forward) will fail after scanning through almost all of the string. Matching on the second pattern will have to do the exact same scan again. The patterns should be able to be scanned 'simultaneously' (and indeed, something like a DFA would be able to accomplish this).
