@@ -24,7 +24,7 @@ print( rough_type["six6"] ) # raises KeyError
 
 ### Constructor
 
-A `RegexDict` is constructed with a list of `(key, value)` pairs as seen above. A list is used instead of a dict in order to allow the user to define a precedence on the matches. If precedence is unimportant (for example if no matches overlap), a dictionary `d` can be passed into the constructor as `d.items()`. An additional `flags` parameter can also be supplied, which is passed on to the underlying `re` functions, [as described here](https://docs.python.org/3/library/re.html#contents-of-module-re).
+A `RegexDict` is constructed with a list of `(pattern, value)` pairs as seen above. A list is used instead of a dict in order to allow the user to define a precedence on the matches. If precedence is unimportant (for example if no matches overlap), a dictionary `d` can be passed into the constructor as `d.items()`. An additional `flags` parameter can also be supplied, which is passed on to the underlying `re` functions, [as described here](https://docs.python.org/3/library/re.html#contents-of-module-re).
 
 ### `RegexDict.get(key)`
 
@@ -76,6 +76,35 @@ print( commands("five") )             # prints "5"
 print( commands("boom with a bang") ) # prints "boom!"
 print( commands("21 + 7") )           # prints "28"
 ```
+
+### `RegexDict.update(key, value)`
+
+Takes a string key and a value, and replaces the value associated with the first pattern that matches the key with the given value. Note that even for update, if no patterns match, `KeyError` is raised (unlike a normal dictionary, which would typically add the key). `__setitem__` is an alias for `get`, so `[] =` can also be used to update a value. So for example:
+
+```
+from regexdict import RegexDict
+
+counter = RegexDict([
+    ("[a-z]+", 0),
+    ("\d+", 0),
+    ("", 0)
+])
+
+for s in ["test", "", "1234", "a", "33", "blah"]:
+    counter[s] += 1
+
+print( counter["a"] ) # prints "3"
+print( counter["0"] ) # prints "2"
+print( counter[""]  ) # prints "1"
+```
+
+### `RegexDict.get_underlying_dict()`
+
+Returns the underlying list of `(pattern, value)` pairs.
+
+## Ommited Functionality
+
+`regexdict` does not include an add or remove function. In order to add or remove a new pattern, the full pattern list needs to be recompiled, so a new RegeDict may as well be built.
 
 ## Efficiency
 

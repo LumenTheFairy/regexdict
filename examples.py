@@ -44,3 +44,18 @@ print( commands.apply("21 + 7") )		    # prints "28"
 print( commands("five") ) 			  # prints "5"
 print( commands("boom with a bang") ) # prints "boom!"
 print( commands("21 + 7") )		      # prints "28"
+
+from regexdict import RegexDict
+
+counter = RegexDict([
+	("[a-z]+", 0),
+	("\d+", 0),
+	("", 0)
+])
+
+for s in ["test", "", "1234", "a", "33", "blah"]:
+	counter[s] += 1
+
+print( counter["a"] ) # prints "3"
+print( counter["0"] ) # prints "2"
+print( counter[""]  ) # prints "1"

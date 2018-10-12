@@ -25,6 +25,14 @@ class TestRegexDict(unittest.TestCase):
 		self.assertEqual(value, 2)
 		self.assertEqual(match.group(), "b")
 
+	def test_underlying(self):
+		underlying = self.basic_dict.get_underlying_dict()
+		self.assertEqual(underlying, [
+			('a', 1),
+			('b', 2),
+			('c', 3)
+		])
+
 	def test_basic_key_error(self):
 		with self.assertRaises(KeyError):
 			self.basic_dict.get('d')
@@ -172,6 +180,52 @@ class TestRegexDict(unittest.TestCase):
 		self.assertEqual( self.from_dict.get('r'), 1 )
 		self.assertEqual( self.from_dict.get('s'), 2 )
 		self.assertEqual( self.from_dict.get('t'), 3 )
+
+
+	def test_update(self):
+		update_dict = RegexDict([
+			('u', 0),
+			('v', 0)
+		])
+		self.assertEqual( update_dict.get('u'), 0 )
+		update_dict.update('u', 5)
+		self.assertEqual( update_dict.get('u'), 5 )
+
+		self.assertEqual( update_dict.get('v'), 0 )
+		update_dict.update('v', "something else")
+		self.assertEqual( update_dict.get('v'), "something else" )
+
+	def test_setitem(self):
+		update_dict = RegexDict([
+			('u', 0),
+			('v', 0)
+		])
+		self.assertEqual( update_dict.get('u'), 0 )
+		update_dict['u'] = 5
+		self.assertEqual( update_dict.get('u'), 5 )
+
+		self.assertEqual( update_dict.get('v'), 0 )
+		update_dict['v'] = "something else"
+		self.assertEqual( update_dict.get('v'), "something else" )
+
+
+	def test_update_underlying(self):
+		update_dict = RegexDict([
+			('u', 0),
+			('v', 0)
+		])
+		underlying = update_dict.get_underlying_dict()
+		self.assertEqual(underlying, [
+			('u', 0),
+			('v', 0)
+		])
+		update_dict.update('u', 5)
+		update_dict.update('v', "something else")
+		underlying = update_dict.get_underlying_dict()
+		self.assertEqual(underlying, [
+			('u', 5),
+			('v', "something else")
+		])
 
 if __name__ == '__main__':
     unittest.main()
